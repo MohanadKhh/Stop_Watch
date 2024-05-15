@@ -115,7 +115,7 @@ int main(void)
   HAL_Delay(2000);
   Alcd_PutAt(&lcd, 1, 0, "let's begin...");
   HAL_Delay(2000);
-  Alcd_PutAt(&lcd, 0, 0, "_____Rules_____");
+  Alcd_PutAt(&lcd, 0, 0, "_____Rules______");
   Alcd_PutAt(&lcd, 1, 0, "Press B to Stop");
   HAL_Delay(3000);
   Alcd_PutAt(&lcd, 1, 0, "Press C to Reset");
@@ -125,8 +125,6 @@ int main(void)
   Alcd_PutAt(&lcd, 0, 0, "let's start.....");
 
   uint8_t flag_start = 0;
-  uint8_t flag_stop = 0;
-
 
   /* USER CODE END 2 */
 
@@ -142,46 +140,17 @@ int main(void)
       // Check if the 'Start' button (Button A) is pressed
       if (Keypad_Get_Key(&keypad, 3))
       {
-          // If the stopwatch is not running and not stopped, clear the display and reset time variables
-          if (flag_start == 0 && flag_stop == 0)
-          {
-              Alcd_Clear(&lcd);
-              HH = MM = SS = mS = 0;
-          }
-          // Set the flag indicating the stopwatch has started
+    	  if(flag_start == 0){
+    		  Alcd_Clear(&lcd);
+    	  }
+          // Set the flag indicating the stop-watch has started
           flag_start = 1;
 
-          // Format the time string and display it on the LCD
-          len = sprintf(str, "%02d:%02d:%02d.%02d", HH, MM, SS, mS);
-          Alcd_PutAt_n(&lcd, 0, 0, str, len);
+          // Display a message indicating the user can stop the stop-watch or reset it
           Alcd_PutAt(&lcd, 1, 0, "B Stop - C Reset");
-
-          // Update time variables
-          mS++;
-          if (mS == 100)	//update every 1 sec
-          {
-              SS++;
-              mS = 0;
-          }
-          if (SS == 60)		//update every 1 min
-          {
-              MM++;
-              SS = 0;
-          }
-          if (MM == 60)		//update every 1 hr
-          {
-              HH++;
-              MM = 0;
-          }
-          if (HH == 24)		//update every 1 day
-          {
-              MM = 0;
-              HH = 0;
-              SS = 0;
-          }
       }
 
-      // Check if the stopwatch is already running
+      // Check if the stop-watch is already running
       if (flag_start == 1)
       {
           // Format the time string and display it on the LCD
@@ -214,18 +183,17 @@ int main(void)
       }
 
       // Check if the 'Stop' button (Button B) is pressed
-      if (Keypad_Get_Key(&keypad, 7))
+      if (Keypad_Get_Key(&keypad, 7) && flag_start == 1)
       {
           // Format the time string and display it on the LCD
           len = sprintf(str, "%02d:%02d:%02d.%02d", HH, MM, SS, mS);
           Alcd_PutAt_n(&lcd, 0, 0, str, len);
 
-          // Display a message indicating the user can start the stopwatch again or reset it
+          // Display a message indicating the user can start the stop-watch again or reset it
           Alcd_PutAt(&lcd, 1, 0, "A Play - C Reset");
 
           // Reset the 'Start' flag and set the 'Stop' flag
           flag_start = 0;
-          flag_stop = 1;
       }
 
       // Check if the 'Reset' button (Button C) is pressed
@@ -242,7 +210,7 @@ int main(void)
           Alcd_PutAt(&lcd, 1, 0, "A Start - B Stop");
 
           // Reset both 'Start' and 'Stop' flags
-          flag_start = flag_stop = 0;
+          flag_start = 0;
       }
 
       /* USER CODE BEGIN 3 */
